@@ -12,7 +12,7 @@ Basic example of utilization of the monbillet.ch API
 ```composer dump-autoload```
 
 3. Run the php server
-```source .env.sample; php -S localhost:9000 -t example/public```
+```composer run-script php-dev```
 
 4. Visit and test http://localhost:9000/
 *Note: This web server is designed to aid application development. It should not be used on a public network.*

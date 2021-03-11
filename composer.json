@@ -15,5 +15,8 @@
 		"files": [
 			"lib/ApiClient.php"
 		]
-	}
+	},
+    "scripts": {
+        "php-dev": "source .env.sample; php -S localhost:9000 -t example/public"
+    }
 }
