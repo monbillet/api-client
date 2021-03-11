@@ -1,0 +1,19 @@
+{
+    "name": "monbillet/api",
+    "description": "allows you to quickly and easily use the monbillet api",
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "monbillet.ch",
+            "email": "contact@monbillet.ch"
+        }
+    ],
+    "minimum-stability": "stable",
+    "require": {},
+    "autoload": {
+		"files": [
+			"lib/ApiClient.php"
+		]
+	}
+}
