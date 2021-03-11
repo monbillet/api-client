@@ -6,7 +6,7 @@
 Use [Composer](https://getcomposer.org/) to install the library.
 
 ``` bash
-$ composer require monbillet/api
+$ composer require monbillet/api:dev-main
 ```
 
 ## Usage
