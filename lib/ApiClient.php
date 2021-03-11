@@ -34,7 +34,7 @@ class ApiClient
      */
     public function getEvents(): array
     {
-        $host = self::HOST . '/events';
+        $host = self::HOST . 'events';
         $data = $this->http_get($host, $this->auth);
         return array_map([$this, 'convertDates'], $data['events']);
     }
@@ -47,7 +47,7 @@ class ApiClient
      */
     public function getEventGroups(): array
     {
-        $host = self::HOST . '/event-groups';
+        $host = self::HOST . 'event-groups';
         $data = $this->http_get($host, $this->auth);
 
         return array_map(function($event_group) {
@@ -66,7 +66,7 @@ class ApiClient
      */
     public function getEvent(string $event): array
     {
-        $host = self::HOST . '/events/' .  $event;
+        $host = self::HOST . 'events/' .  $event;
 
         try {
             $data = $this->http_get($host, $this->auth);
@@ -105,10 +105,6 @@ class ApiClient
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_URL, $url);
-        // (start Debug only) Ignore missing certificats
-        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
-        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
-        // (end debug only)
         curl_setopt($ch, CURLOPT_HTTPHEADER, [$auth]);
         $result=curl_exec($ch);
         $httpcode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
