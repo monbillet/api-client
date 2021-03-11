@@ -7,14 +7,14 @@
 ```php
 use Monbillet\ApiClient;
 
-$token = ''; //your API Key
+$token = ''; // your API key
 $client = new ApiClient($token);
 
 $events = $client->getEvents();
 $event_groups = $client->getEventGroups();
 
-$id_event = ''; // the id of a specific event
-$event = $client->getEvent($id_event);
+$id = ''; // the id of an event
+$event = $client->getEvent($id);
 ```
 
 ## Running the example
