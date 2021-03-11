@@ -1,19 +1,28 @@
-### README
-
-Basic example of utilization of the monbillet.ch API 
-
+# API monbillet.ch
+*By [monbillet.ch](https://monbillet.ch/)*
 
 
-##### Running the example
+## Usage
 
-1. Write your API key in the .env.sample file
+```php
+use Monbillet\ApiClient;
 
-2. Install the library
-```composer dump-autoload```
+$token = ''; //your API Key
+$client = new ApiClient($token);
 
-3. Run the php server
-```composer run-script php-dev```
+$events = $client->getEvents();
+$event_groups = $client->getEventGroups();
 
-4. Visit and test http://localhost:9000/
+$id_event = ''; // the id of a specific event
+$event = $client->getEvent($id_event);
+```
+
+## Running the example
+
+1. Write your API key in the **.env.sample** file
+2. Run ```composer dump-autoload```
+3. Run ```composer run-script php-dev```
+
+Visit and test [localhost:9000](http://localhost:9000/)
 *Note: This web server is designed to aid application development. It should not be used on a public network.*
 
