@@ -11,6 +11,7 @@ use Exception;
 class ApiClient
 {
     const HEADER_NAME = "X-Monbillet-Api-Token";
+    const HOST = "https://monbillet.ch/api/v1/";
 
     /**
      * @var string
@@ -33,7 +34,7 @@ class ApiClient
      */
     public function getEvents(): array
     {
-        $host = 'https://monbillet.test/api/v1/events';
+        $host = self::HOST . '/events';
         $data = $this->http_get($host, $this->auth);
         return array_map([$this, 'convertDates'], $data['events']);
     }
@@ -46,7 +47,7 @@ class ApiClient
      */
     public function getEventGroups(): array
     {
-        $host = 'https://monbillet.test/api/v1/event-groups';
+        $host = self::HOST . '/event-groups';
         $data = $this->http_get($host, $this->auth);
 
         return array_map(function($event_group) {
@@ -65,7 +66,7 @@ class ApiClient
      */
     public function getEvent(string $event): array
     {
-        $host = 'https://monbillet.test/api/v1/events/' . $event;
+        $host = self::HOST . '/events/' .  $event;
 
         try {
             $data = $this->http_get($host, $this->auth);
