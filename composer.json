@@ -13,7 +13,11 @@
     "require": {},
     "autoload": {
 		"files": [
-			"lib/ApiClient.php"
+			"lib/ApiClient.php",
+            "lib/HttpException.php",
+            "lib/ForbiddenException.php",
+            "lib/NotFoundException.php",
+            "lib/InternalServerException.php"
 		]
 	},
     "scripts": {
