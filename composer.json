@@ -1,5 +1,5 @@
 {
-    "name": "monbillet/api",
+    "name": "monbillet/api-client",
     "description": "allows you to quickly and easily use the monbillet api",
     "type": "library",
     "license": "MIT",
