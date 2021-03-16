@@ -117,25 +117,25 @@ class ApiClient
         curl_close($ch);
 
         if ($httpcode === 403) {
-            throw new ForbiddenException('Access to resource ' . $url . ' is forbidden.');
+            throw new ForbiddenException('Access to resource ' . $url . ' is forbidden.', 403);
         }
 
         if ($httpcode === 404) {
-            throw new NotFoundException('Resource ' . $url . ' not found.');
+            throw new NotFoundException('Resource ' . $url . ' not found.', 404);
         }
     
         if ($httpcode >= 400 && $httpcode < 500) {
-            throw new HttpException('Error trying to access resource ' . $url . '. The server responded with ' . $httpcode);
+            throw new HttpException('Error trying to access resource ' . $url, $httpcode);
         }
 
         if ($httpcode >= 500) {
-            throw new InternalServerException('Server error ' . $httpcode . ' trying to access resource ' . $url);
+            throw new InternalServerException('Server error trying to access resource ' . $url, $httpcode);
         }
 
         $result = json_decode($result, true);
 
         if (json_last_error() !== JSON_ERROR_NONE) {
-            throw new Exception('Error decoding JSON');
+            throw new Exception('Error decoding JSON', 500);
         }
         
         return $result;
