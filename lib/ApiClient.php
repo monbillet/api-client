@@ -7,6 +7,7 @@ namespace Monbillet;
 use DateTime;
 use Exception;
 use Monbillet\ForbiddenException;
+use UnexpectedValueException;
 
 /**
  * This class allows you to quickly and easily use the monbillet api
@@ -69,10 +70,12 @@ class ApiClient
      */
     public function getEvent(string $event_id): array
     {
+        if (empty($event_id)) {
+            throw new UnexpectedValueException('Event id must not be empty');
+        }
+
         $url = self::BASE_URL . 'events/' .  $event_id;
-
         $data = $this->getJson($url);
-
         return $data['event'];
     }
 
