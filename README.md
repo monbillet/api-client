@@ -14,19 +14,19 @@ $ composer require monbillet/api:dev-main
 ```php
 use Monbillet\ApiClient;
 
-$token = ''; // your API key
+$token = ''; // Your API key
 $client = new ApiClient($token);
 
 $events = $client->getEvents();
 $event_groups = $client->getEventGroups();
 
-$id = ''; // the id of an event
+$id = ''; // The id or unique name of the event
 $event = $client->getEvent($id);
 ```
 
 ## Running the example
 
-1. Write your API key in the **.env.sample** file
+1. Write your API key in the **example/.env.sample** file
 2. Run ```composer dump-autoload```
 3. Run ```composer run-script php-dev```
 
