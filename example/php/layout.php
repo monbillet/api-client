@@ -1,8 +1,8 @@
 <!doctype html>
-<html lang="en">
+<html lang="fr">
 
 <head>
-    <title>monbillet.ch • API</title>
+    <title>monbillet.ch · Exemple API</title>
 
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1 user-scalable=no maximum-scale=1.0">
@@ -17,31 +17,34 @@
 
 <body>
     <div class="container py-3">
-
-        <?php if($page === 'event' && $event) {?>
+        <?php if (isset($error))  { ?>
+            <div class="alert alert-danger">
+                <?= $error ?>
+            </div>
+        <?php }else if ($page === 'event') {?>
             <!-- Show detailed informations about a specific event -->
             <p>
-                <a href="/"> <&nbsp;Liste des événements</a>&nbsp;
+                <a href="/">← Liste des événements</a>
             </p>
 
-            <table class="table">
+            <table class="table table-bordered">
                 <thead>
-                    <tr>
-                        <th scope="col">#</th>
-                        <th scope="col">Content</th>
+                    <tr class="bg-secondary text-light">
+                        <th scope="col">Nom</th>
+                        <th scope="col">Détail</th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr>
-                        <th scope="row">preTitle</th>
+                        <th>Pré-titre</th>
                         <td><?= $event['preTitle'] ?></td>
                     </tr>
                     <tr>
-                        <th scope="row">title</th>
+                        <th>Titre</th>
                         <td><?= $event['title'] ?></td>
                     </tr>
                     <tr>
-                        <th scope="row">location</th>
+                        <th>Lieu</th>
                         <td>
                             <div>
                                 <b><?= $event['location']['name'] ?></b><br>
@@ -51,7 +54,7 @@
                         </td>
                     </tr>
                     <tr>
-                        <th scope="row">shows</th>
+                        <th>Dates</th>
                         <td>
                             <div>
                                 <?php foreach ($event['shows'] as $show) {?>
@@ -61,26 +64,22 @@
                         </td>
                     </tr>
                     <tr>
-                        <th scope="row">aside</th>
-                        <td><?= $event['aside'] ?></td>
-                    </tr>
-                    <tr>
-                        <th scope="row">text</th>
+                        <th>Description</th>
                         <td><?= $event['text'] ?></td>
                     </tr>
                     <tr>
-                        <th scope="row">bg</th>
-                        <td><img src='<?= $event['bg'] ?>' alt="Affiche de l'évènement" width=500px></td>
+                        <th>Affiche <small>Grande taille</small></th>
+                        <td><img src='<?= $event['posterPreview'] ?>' alt="Image de l'évènement" width=500px></td>
                     </tr>
                 </tbody>
             </table>
 
-        <?php } else if($page === 'event-groups') { ?>
+        <?php } else if ($page === 'event-groups') { ?>
             <!-- Show a list of the events ordered by groups -->
 
             <h3 class="my-5"> 
-                <a class="mr-3" href="?page=events">Événements</a>
-                <u><a class="ml-3 active" href="?page=event-groups">Groupes d'événements</a></u>
+                <span class="font-weight-normal"><a class="mr-3" href="?page=events">Événements</a></span>
+                <b><a class="active d-block d-sm-inline" href="?page=event-groups">Groupes d'événements</a></b>
             </h3>
 
             <?php foreach ($event_groups as $event_group) {?>
@@ -119,12 +118,12 @@
                 <br>
             <?php } ?><!-- end foreach -->
 
-        <?php } else if($page === 'events') { ?>
+        <?php } else if ($page === 'events') { ?>
             <!-- Show a list of the events -->
             <section>
                 <h3 class="my-5"> 
-                    <u><a class="mr-3" href="?page=events">Événements</a></u>
-                    <a class="ml-3 active" href="?page=event-groups">Groupes d'événements</a></u>
+                    <b><a class="mr-3 active" href="?page=events">Événements</a></b>
+                    <span class="font-weight-normal"><a class="d-block d-sm-inline" href="?page=event-groups">Groupes d'événements</a></span>
                 </h3>
                 
                 <div class="row section-body row-cols-xl-5 row-cols-lg-4 row-cols-md-3 row-cols-sm-2 row-cols-1">
@@ -157,8 +156,6 @@
                     <?php } ?><!-- end foreach -->
                 </div>
             </section>
-        <?php } else  { ?>
-            404
         <?php } ?><!-- end if -->
     </div>
 
