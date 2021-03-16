@@ -10,7 +10,10 @@
         }
     ],
     "minimum-stability": "stable",
-    "require": {},
+    "require": {
+        "php": "^7.0||^8.0",
+        "ext-curl": "*"
+    },
     "autoload": {
 		"files": [
 			"lib/ApiClient.php",
