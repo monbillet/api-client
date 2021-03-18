@@ -80,6 +80,29 @@ class ApiClient
     }
 
     /**
+     * Get the list of events order by groups
+     *
+     * @return array
+     * @throws Exception
+     */
+    public function getEventGroup(string $group_id): array
+    {
+        if (empty($group_id)) {
+            throw new UnexpectedValueException('event id must not be empty');
+        }
+
+        $url = self::BASE_URL . 'event-groups/' .  $group_id;
+        $data = $this->getJson($url);
+
+        return array_map(function ($event_group) {
+            return array_merge(
+                $event_group,
+                array_map([$this, 'convertDates'], $event_group['events'])
+            );
+        }, [$data['event-groups']]);
+    }
+
+    /**
      * Convert date properties to DateTime instances
      *
      * @param mixed $event
