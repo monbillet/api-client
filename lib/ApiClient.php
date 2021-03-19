@@ -23,11 +23,26 @@ class ApiClient
     private $auth;
 
     /**
-     * @param string $api_key
+     * @var string
      */
-    public function __construct(string $api_key)
+    private $cachePath;
+
+    /**
+     * @var int
+     */
+    private $cacheMinutes;
+    
+    /**
+     * @param string $api_key 
+     * @param string|null $cachePath absolute path (optional)
+     * @param int $minutes_cache (optional)
+     * @return void 
+     */
+    public function __construct(string $api_key, string $cachePath=null, int $cacheMinutes=10)
     {
         $this->auth = self::HEADER_NAME . ':' . $api_key;
+        $this->cachePath = $cachePath;
+        $this->cacheMinutes = $cacheMinutes;
     }
 
     /**
@@ -106,6 +121,41 @@ class ApiClient
         return $data;
     }
 
+    /** 
+     * Delete all cached files
+     * 
+     * @return void  
+     */
+    public function deleteCache() {
+        if (is_dir($this->cachePath)) {
+            $this->deleteDirectory($this->cachePath);
+        }
+    }
+
+    /**
+     * Remove a directory and all its contents
+     * 
+     * @param mixed $dir 
+     * @return bool 
+     */
+    private function deleteDirectory($dir) {
+        if (!file_exists($dir)) {
+            return true;
+        }
+        if (!is_dir($dir)) {
+            return unlink($dir);
+        }
+        foreach (scandir($dir) as $item) {
+            if ($item == '.' || $item == '..') {
+                continue;
+            }
+            if (!$this->deleteDirectory($dir . DIRECTORY_SEPARATOR . $item)) {
+                return false;
+            }
+        }
+        return rmdir($dir);
+    }
+
     /**
      * Convert date properties to DateTime instances
      *
@@ -146,6 +196,19 @@ class ApiClient
      */
     private function getJson(string $url): array
     {
+        if (isset($this->cachePath)) {
+            $file_path = $this->cachePath . substr($url, strlen(self::BASE_URL) -1);    
+            $cache_path = $file_path . "/cache.json";
+            if ( file_exists($cache_path) && ( filemtime($cache_path) + ($this->cacheMinutes*60) > time()) ){
+                $cache = file_get_contents($cache_path);
+                $cache_array = json_decode($cache, true);
+                if (json_last_error() !== JSON_ERROR_NONE) {
+                    throw new Exception('Error decoding JSON', 500);
+                }
+                return $cache_array;
+            }
+        }
+
         $ch = curl_init();
 
         curl_setopt_array($ch, [
@@ -175,12 +238,21 @@ class ApiClient
             throw new InternalServerException('Server error trying to access resource ' . $url, $httpcode);
         }
 
-        $result = json_decode($result, true);
+        $result_array = json_decode($result, true);
 
         if (json_last_error() !== JSON_ERROR_NONE) {
             throw new Exception('Error decoding JSON', 500);
         }
+
+        if (isset($this->cachePath)) {
+            $file_path = $this->cachePath . substr($url, strlen(self::BASE_URL) -1);    
+            if (!is_dir($file_path)) {
+                mkdir($file_path, 0777, true);
+            }
+            file_put_contents ($file_path.'/cache.json' , $result);
+        }
         
-        return $result;
+        return $result_array;
+
     }
 }

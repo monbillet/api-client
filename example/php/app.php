@@ -11,7 +11,7 @@ use Monbillet\ApiClient;
 use Monbillet\NotFoundException;
 
 $token = getenv('MB_API_KEY');
-$client = new ApiClient($token);
+$client = new ApiClient($token, __DIR__ . "/../tmp", 10);
 
 $error = null;
 $event = null;
@@ -23,6 +23,10 @@ if (isset($_GET['page'])) {
     $page = $_GET['page'];
 } else {
     $page = 'events';
+}
+
+if (isset($_GET['cache']) && ($_GET['cache'] === 'delete')) {
+    $client->deleteCache();
 }
 
 try {
