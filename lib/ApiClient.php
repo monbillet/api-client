@@ -76,7 +76,11 @@ class ApiClient
 
         $url = self::BASE_URL . 'events/' .  $event_id;
         $data = $this->getJson($url);
-        return $data['event'];
+
+        $data = $this->convertDatesEvent($data['event']);
+        $data['shows'] = array_map([$this, 'convertDateShow'], $data['shows']);
+
+        return $data;
     }
 
     /**
@@ -94,12 +98,12 @@ class ApiClient
         $url = self::BASE_URL . 'event-groups/' .  $group_id;
         $data = $this->getJson($url);
 
-        return array_map(function ($event_group) {
-            return array_merge(
-                $event_group,
-                array_map([$this, 'convertDates'], $event_group['events'])
-            );
-        }, [$data['event-groups']]);
+        $data['event-groups'] = array_merge(
+            $data['event-groups'],
+            array_map([$this, 'convertDatesEvent'], $data['event-groups']['events'])
+        );
+
+        return $data;
     }
 
     /**
@@ -113,6 +117,19 @@ class ApiClient
         return array_merge($event, [
             'dateFirstShow' => new DateTime($event['dateFirstShow']),
             'dateLastShow' => new DateTime($event['dateLastShow']),
+        ]);
+    }
+
+    /**
+     * Convert date properties to DateTime instances
+     *
+     * @param mixed $show
+     * @return array
+     */
+    private function convertDateShow($show): array
+    {
+        return array_merge($show, [
+            'dateHappens' => new DateTime($show['dateHappens']),
         ]);
     }
 
