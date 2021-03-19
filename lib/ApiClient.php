@@ -40,7 +40,7 @@ class ApiClient
     {
         $url = self::BASE_URL . 'events';
         $data = $this->getJson($url);
-        return array_map([$this, 'convertDates'], $data['events']);
+        return array_map([$this, 'convertDatesEvent'], $data['events']);
     }
 
     /**
@@ -57,7 +57,7 @@ class ApiClient
         return array_map(function ($event_group) {
             return array_merge(
                 $event_group,
-                array_map([$this, 'convertDates'], $event_group['events'])
+                array_map([$this, 'convertDatesEvent'], $event_group['events'])
             );
         }, $data['event-groups']);
     }
@@ -108,7 +108,7 @@ class ApiClient
      * @param mixed $event
      * @return array
      */
-    private function convertDates($event): array
+    private function convertDatesEvent($event): array
     {
         return array_merge($event, [
             'dateFirstShow' => new DateTime($event['dateFirstShow']),
