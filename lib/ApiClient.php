@@ -6,8 +6,10 @@ namespace Monbillet;
 
 use DateTime;
 use Exception;
-use Monbillet\ForbiddenException;
 use UnexpectedValueException;
+use Monbillet\ForbiddenException;
+use Monbillet\InternalServerException;
+use Monbillet\NotFoundException;
 
 /**
  * This class allows you to quickly and easily use the monbillet api

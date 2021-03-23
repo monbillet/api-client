@@ -15,15 +15,15 @@
         "ext-curl": "*"
     },
     "autoload": {
-		"files": [
-			"lib/ApiClient.php",
+        "files": [
+            "lib/ApiClient.php",
             "lib/HttpException.php",
             "lib/ForbiddenException.php",
             "lib/NotFoundException.php",
             "lib/InternalServerException.php"
-		]
-	},
+        ]
+    },
     "scripts": {
-        "php-dev": "source example/.env.sample && php -S localhost:9000 -t example/public"
+        "example": "source example/.env.sample && php -S localhost:9000 -t example/public"
     }
 }
