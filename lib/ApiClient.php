@@ -18,6 +18,7 @@ class ApiClient
 {
     const HEADER_NAME = 'X-Monbillet-Api-Token';
     const BASE_URL = 'https://monbillet.ch/api/v1/';
+    const CACHE_DIR_NAME = 'monbillet-api-client';
 
     /**
      * @var string
@@ -43,7 +44,7 @@ class ApiClient
     public function __construct(string $api_key, string $cache_path = null, int $cache_expire_minutes = 10)
     {
         $this->auth = self::HEADER_NAME . ':' . $api_key;
-        $this->cachePath = $cache_path;
+        $this->cachePath = rtrim($cache_path, '/') . '/' . self::CACHE_DIR_NAME;
         $this->cacheExpireMinutes = $cache_expire_minutes;
     }
 
@@ -156,11 +157,8 @@ class ApiClient
      */
     public function deleteCache()
     {
-        if (is_dir($this->cachePath . "/events")) {
-            self::rrmdir($this->cachePath . "/events");
-        }
-        if (is_dir($this->cachePath . "/event-groups")) {
-            self::rrmdir($this->cachePath . "/event-groups");
+        if (is_dir($this->cachePath)) {
+            self::rrmdir($this->cachePath);
         }
     }
 
