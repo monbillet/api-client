@@ -44,7 +44,7 @@ class ApiClient
     public function __construct(string $api_key, string $cache_path = null, int $cache_expire_minutes = 10)
     {
         $this->auth = self::HEADER_NAME . ':' . $api_key;
-        $this->cachePath = $cache_path ? rtrim($cache_path, '/') . '/' . self::CACHE_DIR_NAME : null;
+        $this->cachePath = isset($cache_path) ? rtrim($cache_path, '/') . '/' . self::CACHE_DIR_NAME : null;
         $this->cacheExpireMinutes = $cache_expire_minutes;
     }
 
