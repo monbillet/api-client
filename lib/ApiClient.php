@@ -30,51 +30,53 @@ class ApiClient
     /**
      * @var int
      */
-    private $cacheMinutes;
-    
+    private $cacheExpireMinutes;
+
     /**
      * @param string $api_key 
-     * @param string|null $cachePath absolute path (optional)
-     * @param int $minutes_cache (optional)
+     * @param string|null $cache_path Absolute path (optional)
+     * @param int $cache_expire_minutes (optional)
      * @return void 
      */
-    public function __construct(string $api_key, string $cachePath=null, int $cacheMinutes=10)
+    public function __construct(string $api_key, string $cache_path = null, int $cache_expire_minutes = 10)
     {
         $this->auth = self::HEADER_NAME . ':' . $api_key;
-        $this->cachePath = $cachePath;
-        $this->cacheMinutes = $cacheMinutes;
+        $this->cachePath = $cache_path;
+        $this->cacheExpireMinutes = $cache_expire_minutes;
     }
 
     /**
      * Get the list of events
      *
      * @return array
+     * @throws ForbiddenException
+     * @throws NotFoundException
+     * @throws HttpException
+     * @throws InternalServerException
      * @throws Exception
      */
     public function getEvents(): array
     {
         $url = self::BASE_URL . 'events';
-        $data = $this->getJson($url);
-        return array_map([$this, 'convertDatesEvent'], $data['events']);
+        $data = $this->getResource($url);
+        return $this->convertDates($data['events']);
     }
 
     /**
      * Get the list of events order by groups
      *
      * @return array
+     * @throws ForbiddenException
+     * @throws NotFoundException
+     * @throws HttpException
+     * @throws InternalServerException
      * @throws Exception
      */
     public function getEventGroups(): array
     {
         $url = self::BASE_URL . 'event-groups';
-        $data = $this->getJson($url);
-
-        return array_map(function ($event_group) {
-            return array_merge(
-                $event_group,
-                array_map([$this, 'convertDatesEvent'], $event_group['events'])
-            );
-        }, $data['event-groups']);
+        $data = $this->getResource($url);
+        return $this->convertDates($data['event-groups']);
     }
 
     /**
@@ -82,43 +84,67 @@ class ApiClient
      *
      * @param string $event_id The id or unique name of the event
      * @return array
+     * @throws UnexpectedValueException
+     * @throws ForbiddenException
+     * @throws NotFoundException
+     * @throws HttpException
+     * @throws InternalServerException
+     * @throws Exception
      */
     public function getEvent(string $event_id): array
     {
         if (empty($event_id)) {
             throw new UnexpectedValueException('Event id must not be empty');
         }
-
         $url = self::BASE_URL . 'events/' .  $event_id;
-        $data = $this->getJson($url);
+        $data = $this->getResource($url);
 
-        $data = $this->convertDatesEvent($data['event']);
-        $data['shows'] = array_map([$this, 'convertDateShow'], $data['shows']);
-
-        return $data;
+        return $this->convertDates($data['event']);
     }
 
     /**
      * Get the list of events order by groups
      *
+     * @param string $group_id The id or unique name of a group
      * @return array
+     * @throws UnexpectedValueException
+     * @throws ForbiddenException
+     * @throws NotFoundException
+     * @throws HttpException
+     * @throws InternalServerException
      * @throws Exception
      */
     public function getEventGroup(string $group_id): array
     {
         if (empty($group_id)) {
-            throw new UnexpectedValueException('event id must not be empty');
+            throw new UnexpectedValueException('Event group id must not be empty');
         }
-
         $url = self::BASE_URL . 'event-groups/' .  $group_id;
-        $data = $this->getJson($url);
+        $data = $this->getResource($url);
 
-        $data['event-groups'] = array_merge(
-            $data['event-groups'],
-            array_map([$this, 'convertDatesEvent'], $data['event-groups']['events'])
-        );
+        return $this->convertDates($data['event-groups']);
+    }
 
-        return $data;
+    /**
+     * Convert date properties to DateTime instances
+     * 
+     * @param array $from 
+     * @return array
+     */
+    private function convertDates(array $from): array
+    {
+        $convert_keys = ['dateFirstShow', 'dateLastShow', 'dateHappens'];
+        $out = [];
+        foreach ($from as $k => $v) {
+            if (is_array($v)) {
+                $out[$k] = $this->convertDates($v);
+            } else if (in_array($k, $convert_keys)) {
+                $out[$k] = new DateTime($v);
+            } else {
+                $out[$k] = $v;
+            }
+        }
+        return $out;
     }
 
     /** 
@@ -126,9 +152,13 @@ class ApiClient
      * 
      * @return void  
      */
-    public function deleteCache() {
-        if (is_dir($this->cachePath)) {
-            $this->deleteDirectory($this->cachePath);
+    public function deleteCache()
+    {
+        if (is_dir($this->cachePath . "/events")) {
+            self::rrmdir($this->cachePath . "/events");
+        }
+        if (is_dir($this->cachePath . "/event-groups")) {
+            self::rrmdir($this->cachePath . "/event-groups");
         }
     }
 
@@ -136,55 +166,33 @@ class ApiClient
      * Remove a directory and all its contents
      * 
      * @param mixed $dir 
-     * @return bool 
+     * @return void 
      */
-    private function deleteDirectory($dir) {
-        if (!file_exists($dir)) {
-            return true;
-        }
+    private static function rrmdir($dir)
+    {
         if (!is_dir($dir)) {
-            return unlink($dir);
+            return;
         }
-        foreach (scandir($dir) as $item) {
-            if ($item == '.' || $item == '..') {
+
+        $objects = scandir($dir);
+        foreach ($objects as $object) {
+            if ($object === "." || $object === "..") {
                 continue;
             }
-            if (!$this->deleteDirectory($dir . DIRECTORY_SEPARATOR . $item)) {
-                return false;
+
+            if (is_dir($dir . DIRECTORY_SEPARATOR . $object) && !is_link($dir . "/" . $object)) {
+                self::rrmdir($dir . DIRECTORY_SEPARATOR . $object);
+                continue;
             }
+
+            unlink($dir . DIRECTORY_SEPARATOR . $object);
         }
-        return rmdir($dir);
+
+        rmdir($dir);
     }
 
     /**
-     * Convert date properties to DateTime instances
-     *
-     * @param mixed $event
-     * @return array
-     */
-    private function convertDatesEvent($event): array
-    {
-        return array_merge($event, [
-            'dateFirstShow' => new DateTime($event['dateFirstShow']),
-            'dateLastShow' => new DateTime($event['dateLastShow']),
-        ]);
-    }
-
-    /**
-     * Convert date properties to DateTime instances
-     *
-     * @param mixed $show
-     * @return array
-     */
-    private function convertDateShow($show): array
-    {
-        return array_merge($show, [
-            'dateHappens' => new DateTime($show['dateHappens']),
-        ]);
-    }
-
-    /**
-     * Get the resource at the given url, and try to convert it to JSON
+     * Get the resource at the given url
      *
      * @param string $url
      * @return array
@@ -194,21 +202,85 @@ class ApiClient
      * @throws InternalServerException
      * @throws Exception
      */
-    private function getJson(string $url): array
+    private function getResource(string $url): array
     {
-        if (isset($this->cachePath)) {
-            $file_path = $this->cachePath . substr($url, strlen(self::BASE_URL) -1);    
-            $cache_path = $file_path . "/cache.json";
-            if ( file_exists($cache_path) && ( filemtime($cache_path) + ($this->cacheMinutes*60) > time()) ){
-                $cache = file_get_contents($cache_path);
-                $cache_array = json_decode($cache, true);
-                if (json_last_error() !== JSON_ERROR_NONE) {
-                    throw new Exception('Error decoding JSON', 500);
-                }
-                return $cache_array;
+        $data = null;
+        $is_from_remote = false;
+
+        if ($this->isCacheEnabled()) {
+            $data = $this->getJsonFromCache($url);
+        }
+
+        if (!$data) {
+            $data = $this->getJsonFromRemote($url);
+            $is_from_remote = true;
+        }
+
+        $result = json_decode($data, true);
+
+        if ($is_from_remote) {
+            if (json_last_error() !== JSON_ERROR_NONE) {
+                throw new Exception('Error decoding JSON from ' . $url, 500);
+            }
+            if ($this->isCacheEnabled()) {
+                $this->saveJsonInCache($url, $data);
             }
         }
 
+        return $result;
+    }
+
+    /**
+     * True if the cache is enabled
+     * 
+     * @return bool 
+     */
+    private function isCacheEnabled(): bool
+    {
+        return isset($this->cachePath);
+    }
+
+    /**
+     * True if the cache is expired
+     * 
+     * @param string $file
+     * @return bool 
+     */
+    private function isCacheExpired(string $file): bool
+    {
+        return ((filemtime($file) + ($this->cacheExpireMinutes * 60)) < time());
+    }
+
+    /**
+     * Get the json from the cache
+     * 
+     * @param string $url 
+     * @return string|null
+     * @throws Exception
+     */
+    private function getJsonFromCache(string $url): ?string
+    {
+        $file_path = $this->cachePath . substr($url, strlen(self::BASE_URL) - 1);
+        $cache_path = $file_path . "/cache.json";
+        if (file_exists($cache_path) && !$this->isCacheExpired($cache_path)) {
+            return file_get_contents($cache_path);
+        } else {
+            return null;
+        }
+    }
+
+    /**
+     * Get the json from the remote
+     * 
+     * @param string $url 
+     * @return string 
+     * @throws ForbiddenException 
+     * @throws NotFoundException 
+     * @throws HttpException 
+     * @throws InternalServerException 
+     */
+    private function getJsonFromRemote(string $url): string
+    {
         $ch = curl_init();
 
         curl_setopt_array($ch, [
@@ -229,7 +301,7 @@ class ApiClient
         if ($httpcode === 404) {
             throw new NotFoundException('Resource ' . $url . ' not found.', 404);
         }
-    
+
         if ($httpcode >= 400 && $httpcode < 500) {
             throw new HttpException('Error trying to access resource ' . $url, $httpcode);
         }
@@ -238,21 +310,22 @@ class ApiClient
             throw new InternalServerException('Server error trying to access resource ' . $url, $httpcode);
         }
 
-        $result_array = json_decode($result, true);
+        return $result;
+    }
 
-        if (json_last_error() !== JSON_ERROR_NONE) {
-            throw new Exception('Error decoding JSON', 500);
+    /**
+     * Save the json in the cache
+     * 
+     * @param string $url 
+     * @param string $json 
+     * @return void 
+     */
+    private function saveJsonInCache(string $url, string $json)
+    {
+        $file_path = $this->cachePath . substr($url, strlen(self::BASE_URL) - 1);
+        if (!is_dir($file_path)) {
+            mkdir($file_path, 0777, true);
         }
-
-        if (isset($this->cachePath)) {
-            $file_path = $this->cachePath . substr($url, strlen(self::BASE_URL) -1);    
-            if (!is_dir($file_path)) {
-                mkdir($file_path, 0777, true);
-            }
-            file_put_contents ($file_path.'/cache.json' , $result);
-        }
-        
-        return $result_array;
-
+        file_put_contents($file_path . '/cache.json', $json);
     }
 }
