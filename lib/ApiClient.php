@@ -99,6 +99,10 @@ class ApiClient
         if (empty($event_id)) {
             throw new UnexpectedValueException('Event id must not be empty');
         }
+        if ($this->isValidUniqueNameOrId($event_id)) {
+            throw new UnexpectedValueException('Forbidden chars');
+        }
+
         $url = self::BASE_URL . 'events/' .  $event_id;
         $data = $this->getResource($url);
 
@@ -122,6 +126,10 @@ class ApiClient
         if (empty($group_id)) {
             throw new UnexpectedValueException('Event group id must not be empty');
         }
+        if ($this->isValidUniqueNameOrId($group_id)) {
+            throw new UnexpectedValueException('Forbidden chars');
+        }
+
         $url = self::BASE_URL . 'event-groups/' .  $group_id;
         $data = $this->getResource($url);
 
@@ -148,6 +156,17 @@ class ApiClient
             }
         }
         return $out;
+    }
+
+    /**
+     * Check if the unique name or the id is valid
+     * 
+     * @param string $param 
+     * @return bool 
+     */
+    private function isValidUniqueNameOrId($param): bool
+    {
+        return preg_replace('/([^a-z0-9-]+)/', '', $param) !== $param;
     }
 
     /** 
