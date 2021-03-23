@@ -99,7 +99,7 @@ class ApiClient
         if (empty($event_id)) {
             throw new UnexpectedValueException('Event id must not be empty');
         }
-        if ($this->isValidUniqueNameOrId($event_id)) {
+        if (!$this->isValidUniqueNameOrId($event_id)) {
             throw new UnexpectedValueException('Forbidden chars');
         }
 
@@ -126,7 +126,7 @@ class ApiClient
         if (empty($group_id)) {
             throw new UnexpectedValueException('Event group id must not be empty');
         }
-        if ($this->isValidUniqueNameOrId($group_id)) {
+        if (!$this->isValidUniqueNameOrId($group_id)) {
             throw new UnexpectedValueException('Forbidden chars');
         }
 
@@ -166,7 +166,7 @@ class ApiClient
      */
     private function isValidUniqueNameOrId($param): bool
     {
-        return preg_replace('/([^a-z0-9-]+)/', '', $param) !== $param;
+        return preg_replace('/([^a-z0-9-]+)/', '', $param) === $param;
     }
 
     /** 
