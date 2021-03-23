@@ -271,6 +271,17 @@ class ApiClient
     }
 
     /**
+     * Get the path of a file in cache depending on the url given
+     * 
+     * @param string $url
+     * @return string 
+     */
+    private function getFilePathCache($url): string
+    {
+        return $this->cachePath . substr($url, strlen(self::BASE_URL) - 1);
+    }
+
+    /**
      * Get the json from the cache
      * 
      * @param string $url 
@@ -279,7 +290,7 @@ class ApiClient
      */
     private function getJsonFromCache(string $url): ?string
     {
-        $file_path = $this->cachePath . substr($url, strlen(self::BASE_URL) - 1);
+        $file_path = $this->getFilePathCache($url);
         $cache_path = $file_path . "/cache.json";
         if (file_exists($cache_path) && !$this->isCacheExpired($cache_path)) {
             return file_get_contents($cache_path);
@@ -341,7 +352,7 @@ class ApiClient
      */
     private function saveJsonInCache(string $url, string $json)
     {
-        $file_path = $this->cachePath . substr($url, strlen(self::BASE_URL) - 1);
+        $file_path = $this->getFilePathCache($url);
         if (!is_dir($file_path)) {
             mkdir($file_path, 0777, true);
         }
