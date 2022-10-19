@@ -36,10 +36,10 @@ class ApiClient
     private $cacheExpireMinutes;
 
     /**
-     * @param string $api_key 
+     * @param string $api_key
      * @param string|null $cache_path Absolute path (optional)
      * @param int $cache_expire_minutes (optional)
-     * @return void 
+     * @return void
      */
     public function __construct(string $api_key, string $cache_path = null, int $cache_expire_minutes = 10)
     {
@@ -138,8 +138,8 @@ class ApiClient
 
     /**
      * Convert date properties to DateTime instances
-     * 
-     * @param array $from 
+     *
+     * @param array $from
      * @return array
      */
     private function convertDates(array $from): array
@@ -160,19 +160,19 @@ class ApiClient
 
     /**
      * Check if the unique name or the id is valid
-     * 
-     * @param string $param 
-     * @return bool 
+     *
+     * @param string $param
+     * @return bool
      */
     private function isValidUniqueNameOrId($param): bool
     {
         return preg_replace('/([^a-z0-9-]+)/', '', $param) === $param;
     }
 
-    /** 
+    /**
      * Delete all cached files
-     * 
-     * @return void  
+     *
+     * @return void
      */
     public function deleteCache()
     {
@@ -183,9 +183,9 @@ class ApiClient
 
     /**
      * Remove a directory and all its contents
-     * 
-     * @param mixed $dir 
-     * @return void 
+     *
+     * @param mixed $dir
+     * @return void
      */
     private static function rrmdir($dir)
     {
@@ -251,8 +251,8 @@ class ApiClient
 
     /**
      * True if the cache is enabled
-     * 
-     * @return bool 
+     *
+     * @return bool
      */
     private function isCacheEnabled(): bool
     {
@@ -261,9 +261,9 @@ class ApiClient
 
     /**
      * True if the cache is expired
-     * 
+     *
      * @param string $file
-     * @return bool 
+     * @return bool
      */
     private function isCacheExpired(string $file): bool
     {
@@ -272,9 +272,9 @@ class ApiClient
 
     /**
      * Get the path of a file in cache depending on the url given
-     * 
+     *
      * @param string $url
-     * @return string 
+     * @return string
      */
     private function getFilePathCache($url): string
     {
@@ -283,8 +283,8 @@ class ApiClient
 
     /**
      * Get the json from the cache
-     * 
-     * @param string $url 
+     *
+     * @param string $url
      * @return string|null
      * @throws Exception
      */
@@ -301,13 +301,13 @@ class ApiClient
 
     /**
      * Get the json from the remote
-     * 
-     * @param string $url 
-     * @return string 
-     * @throws ForbiddenException 
-     * @throws NotFoundException 
-     * @throws HttpException 
-     * @throws InternalServerException 
+     *
+     * @param string $url
+     * @return string
+     * @throws ForbiddenException
+     * @throws NotFoundException
+     * @throws HttpException
+     * @throws InternalServerException
      */
     private function getJsonFromRemote(string $url): string
     {
@@ -345,10 +345,10 @@ class ApiClient
 
     /**
      * Save the json in the cache
-     * 
-     * @param string $url 
-     * @param string $json 
-     * @return void 
+     *
+     * @param string $url
+     * @param string $json
+     * @return void
      */
     private function saveJsonInCache(string $url, string $json)
     {
