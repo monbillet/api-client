@@ -149,7 +149,7 @@ class ApiClient
         foreach ($from as $k => $v) {
             if (is_array($v)) {
                 $out[$k] = $this->convertDates($v);
-            } else if (in_array($k, $convert_keys)) {
+            } else if (in_array($k, $convert_keys, true)) {
                 $out[$k] = new DateTime($v);
             } else {
                 $out[$k] = $v;
