@@ -40,7 +40,7 @@ class ApiClient
      * @param string|null $cache_path Absolute path (optional)
      * @param int $cache_expire_minutes (optional)
      */
-    public function __construct(?string $api_key = null,? string $cache_path = null, int $cache_expire_minutes = 1)
+    public function __construct(?string $api_key = null, ?string $cache_path = null, int $cache_expire_minutes = 10)
     {
         if(!empty($api_key)){
             $this->auth = self::HEADER_NAME . ':' . $api_key;
