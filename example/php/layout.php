@@ -89,7 +89,7 @@
                     <?php foreach ($event_group['events'] as $event) {?>
                         <article class="col mb-4 card-container">
                             <div class="card card-event">
-                                <img class="card-img-top" alt="Affiche de l'évènement" src="<?=$event['posterMd']?>">
+                                <img class="card-img-top" alt="Affiche de l'évènement" src="<?=$event['posterPreview']?>">
                                 <div class="card-body">
                                     <a href="?page=event&q=<?=$event['uniqueName']?>" class="stretched-link">
                                     <h3 class="card-title">
