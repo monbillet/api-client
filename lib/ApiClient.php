@@ -21,9 +21,9 @@ class ApiClient
     const CACHE_DIR_NAME = 'monbillet-api-client';
 
     /**
-     * @var string
+     * @var string|null
      */
-    private $auth;
+    private $auth = null;
 
     /**
      * @var string
@@ -36,14 +36,15 @@ class ApiClient
     private $cacheExpireMinutes;
 
     /**
-     * @param string $api_key
+     * @param string|null $api_key
      * @param string|null $cache_path Absolute path (optional)
      * @param int $cache_expire_minutes (optional)
-     * @return void
      */
-    public function __construct(string $api_key, string $cache_path = null, int $cache_expire_minutes = 10)
+    public function __construct(?string $api_key = null,? string $cache_path = null, int $cache_expire_minutes = 1)
     {
-        $this->auth = self::HEADER_NAME . ':' . $api_key;
+        if(!empty($api_key)){
+            $this->auth = self::HEADER_NAME . ':' . $api_key;
+        }
         $this->cachePath = isset($cache_path) ? rtrim($cache_path, '/') . '/' . self::CACHE_DIR_NAME : null;
         $this->cacheExpireMinutes = $cache_expire_minutes;
     }
@@ -230,7 +231,10 @@ class ApiClient
             $data = $this->getJsonFromCache($url);
         }
 
-        if (!$data) {
+        // Load from remote when
+        // 1. Cache is empty
+        // 2. Remote is enabled and cache is expired
+        if (!$data || ($this->hasApiToken() && $this->isCacheExpired($url))) {
             $data = $this->getJsonFromRemote($url);
             $is_from_remote = true;
         }
@@ -250,6 +254,16 @@ class ApiClient
     }
 
     /**
+     * True if the an API token is provided
+     *
+     * @return bool
+     */
+    private function hasApiToken(): bool
+    {
+        return isset($this->auth);
+    }
+
+    /**
      * True if the cache is enabled
      *
      * @return bool
@@ -262,12 +276,13 @@ class ApiClient
     /**
      * True if the cache is expired
      *
-     * @param string $file
+     * @param string $url
      * @return bool
      */
-    private function isCacheExpired(string $file): bool
+    private function isCacheExpired(string $url): bool
     {
-        return ((filemtime($file) + ($this->cacheExpireMinutes * 60)) < time());
+        $file = $this->getFilePathCacheFromUrl($url);
+        return (filemtime($file) + ($this->cacheExpireMinutes * 60)) < time();
     }
 
     /**
@@ -290,10 +305,9 @@ class ApiClient
      */
     private function getJsonFromCache(string $url): ?string
     {
-        $file_path = $this->getFilePathCache($url);
-        $cache_path = $file_path . "/cache.json";
-        if (file_exists($cache_path) && !$this->isCacheExpired($cache_path)) {
-            return file_get_contents($cache_path);
+        $cache_file_path = $this->getFilePathCacheFromUrl($url);
+        if (file_exists($cache_file_path)) {
+            return file_get_contents($cache_file_path);
         } else {
             return null;
         }
@@ -352,10 +366,23 @@ class ApiClient
      */
     private function saveJsonInCache(string $url, string $json)
     {
-        $file_path = $this->getFilePathCache($url);
-        if (!is_dir($file_path)) {
-            mkdir($file_path, 0777, true);
+        $cache_file_path = $this->getFilePathCacheFromUrl($url);
+        $folder_cache_file_path = dirname($cache_file_path);
+        if (!is_dir($folder_cache_file_path)) {
+            mkdir($folder_cache_file_path, 0777, true);
         }
-        file_put_contents($file_path . '/cache.json', $json);
+        file_put_contents($cache_file_path, $json);
+    }
+
+    /**
+     * Get the file path from an url
+     *
+     * @param string $url
+     * @return string
+     */
+    private function getFilePathCacheFromUrl(string $url)
+    {
+        $file_path = $this->getFilePathCache($url);
+        return $file_path . '/cache.json';
     }
 }
