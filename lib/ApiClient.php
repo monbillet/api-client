@@ -227,6 +227,7 @@ class ApiClient
         $data = null;
         $is_from_remote = false;
 
+        // Load from cache if enabled
         if ($this->isCacheEnabled()) {
             $data = $this->getJsonFromCache($url);
         }
@@ -235,8 +236,13 @@ class ApiClient
         // 1. Cache is empty
         // 2. Remote is enabled and cache is expired
         if (!$data || ($this->hasApiToken() && $this->isCacheExpired($url))) {
-            $data = $this->getJsonFromRemote($url);
-            $is_from_remote = true;
+            $remote_data = $this->getJsonFromRemote($url);
+
+            // Use remote data if they are valid and not empty
+            if (empty($remote_data)) {
+                $data = $remote_data;
+                $is_from_remote = true;
+            }
         }
 
         $result = json_decode($data, true);
