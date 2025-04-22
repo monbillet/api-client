@@ -236,10 +236,10 @@ class ApiClient
         // 1. Cache is empty
         // 2. Remote is enabled and cache is expired
         if (!$data || ($this->hasApiToken() && $this->isCacheExpired($url))) {
-            $remote_data = $this->getJsonFromRemote($url);
+            ['result' => $remote_data, 'http_code' => $http_code] = $this->getJsonFromRemote($url);
 
             // Use remote data if they are valid and not empty
-            if (empty($remote_data)) {
+            if ($http_code !== 204) {
                 $data = $remote_data;
                 $is_from_remote = true;
             }
@@ -323,13 +323,13 @@ class ApiClient
      * Get the json from the remote
      *
      * @param string $url
-     * @return string
+     * @return array
      * @throws ForbiddenException
      * @throws NotFoundException
      * @throws HttpException
      * @throws InternalServerException
      */
-    private function getJsonFromRemote(string $url): string
+    private function getJsonFromRemote(string $url): array
     {
         $ch = curl_init();
 
@@ -360,7 +360,7 @@ class ApiClient
             throw new InternalServerException('Server error trying to access resource ' . $url, $httpcode);
         }
 
-        return $result;
+        return ['result' => $result, "http_code" => $httpcode];
     }
 
     /**
