@@ -245,6 +245,10 @@ class ApiClient
             }
         }
 
+        if (!isset($data)) {
+            throw new NotFoundException('No data to display');
+        }
+
         $result = json_decode($data, true);
 
         if ($is_from_remote) {
