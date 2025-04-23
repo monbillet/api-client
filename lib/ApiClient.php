@@ -235,7 +235,7 @@ class ApiClient
         // Load from remote when
         // 1. Cache is empty
         // 2. Remote is enabled and cache is expired
-        if (!$data || ($this->hasApiToken() && $this->isCacheExpired($url))) {
+        if (!isset($data) || ($this->hasApiToken() && $this->isCacheExpired($url))) {
             ['result' => $remote_data, 'http_code' => $http_code] = $this->getJsonFromRemote($url);
 
             // Use remote data if they are valid and not empty
