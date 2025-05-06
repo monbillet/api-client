@@ -52,16 +52,16 @@ class ApiClient
     /**
      * Get the list of events
      *
+     * @param array{showPastEvents: 'only' | true}|null $options
      * @return array
-     * @throws ForbiddenException
-     * @throws NotFoundException
      * @throws HttpException
+     * @throws ForbiddenException
      * @throws InternalServerException
-     * @throws Exception
+     * @throws NotFoundException
      */
-    public function getEvents(): array
+    public function getEvents(?array $options = []): array
     {
-        $url = self::BASE_URL . 'events';
+        $url = self::BASE_URL . 'events' . '?' . http_build_query($this->sanitizeEventsQueryParams($options));
         $data = $this->getResource($url);
         return $this->convertDates($data['events']);
     }
@@ -69,16 +69,16 @@ class ApiClient
     /**
      * Get the list of events order by groups
      *
-     * @return array
+     * @param array{showPastEvents: 'only' | true}|null $options
      * @throws ForbiddenException
      * @throws NotFoundException
      * @throws HttpException
      * @throws InternalServerException
      * @throws Exception
      */
-    public function getEventGroups(): array
+    public function getEventGroups(?array $options = []): array
     {
-        $url = self::BASE_URL . 'event-groups';
+        $url = self::BASE_URL . 'event-groups' . '?' . http_build_query($this->sanitizeEventsQueryParams($options));
         $data = $this->getResource($url);
         return $this->convertDates($data['event-groups']);
     }
@@ -303,7 +303,9 @@ class ApiClient
      */
     private function getFilePathCache($url): string
     {
-        return $this->cachePath . substr($url, strlen(self::BASE_URL) - 1);
+        // Hash url to avoid to deal with special character such as ? < > -, etc.
+        $hashed_url = md5( strtolower( (substr($url, strlen(self::BASE_URL) - 1)) ));
+        return $this->cachePath . '/' . $hashed_url;
     }
 
     /**
@@ -394,5 +396,25 @@ class ApiClient
     {
         $file_path = $this->getFilePathCache($url);
         return $file_path . '/cache.json';
+    }
+
+    /**
+     * Sanitize options which will be used as query parameters
+     *
+     * @param array{showPastEvents: 'only' | true} $params
+     * @return array
+     */
+    private function sanitizeEventsQueryParams(array $params): array {
+        $out = [];
+
+        if (isset($params['showPastEvents'])) {
+            if ($params['showPastEvents'] === 'only'){
+                $out['showPastEvents'] = 'only';
+            } elseif ($params['showPastEvents'] === true){
+                $out['showPastEvents'] = true;
+            }
+        }
+
+        return $out;
     }
 }
