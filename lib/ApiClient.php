@@ -61,7 +61,7 @@ class ApiClient
      */
     public function getEvents(?array $options = []): array
     {
-        $url = self::BASE_URL . 'events' . '?' . http_build_query($this->sanitizeEventsQueryParams($options));
+        $url = self::BASE_URL . 'events' . '?' . http_build_query($this->sanitizeEventsOptionsForQueryParams($options));
         $data = $this->getResource($url);
         return $this->convertDates($data['events']);
     }
@@ -78,7 +78,7 @@ class ApiClient
      */
     public function getEventGroups(?array $options = []): array
     {
-        $url = self::BASE_URL . 'event-groups' . '?' . http_build_query($this->sanitizeEventsQueryParams($options));
+        $url = self::BASE_URL . 'event-groups' . '?' . http_build_query($this->sanitizeEventsOptionsForQueryParams($options));
         $data = $this->getResource($url);
         return $this->convertDates($data['event-groups']);
     }
@@ -404,7 +404,7 @@ class ApiClient
      * @param array{showPastEvents: 'only' | true} $params
      * @return array
      */
-    private function sanitizeEventsQueryParams(array $params): array {
+    private function sanitizeEventsOptionsForQueryParams(array $params): array {
         $out = [];
 
         if (isset($params['showPastEvents'])) {
