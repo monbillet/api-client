@@ -418,12 +418,12 @@ class ApiClient
     private function sanitizeEventsOptionsForQueryParams(array $params): array {
         $out = [];
 
-        if (isset($params['showPastEvents'])) {
-            if ($params['showPastEvents'] === 'only'){
-                $out['showPastEvents'] = 'only';
-            } elseif ($params['showPastEvents'] === true){
-                $out['showPastEvents'] = true;
-            }
+        $show_past_events = $params['show_past_events'] ?? null;
+
+        if ($show_past_events === 'only'){
+            $out['showPastEvents'] = 'only';
+        } elseif ($show_past_events === true){
+            $out['showPastEvents'] = true;
         }
 
         return $out;
