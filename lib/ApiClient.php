@@ -301,11 +301,22 @@ class ApiClient
      * @param string $url
      * @return string
      */
-    private function getFilePathCache($url): string
+    private function getFilePathCache(string $url): string
     {
-        // Hash url to avoid to deal with special character such as ? < > -, etc.
-        $hashed_url = md5( strtolower( (substr($url, strlen(self::BASE_URL) - 1)) ));
-        return $this->cachePath . '/' . $hashed_url;
+        return $this->cachePath . '/' . $this->generateHash($url);
+    }
+
+    /**
+     * Generate an hash from URL and API token
+     *
+     * @param string $url
+     * @return string
+     */
+    private function generateHash(string $url): string {
+        $path = substr($url, strlen(self::BASE_URL) - 1);
+        $api_token = $this->auth;
+
+        return md5( strtolower( ( $api_token . $path ) ));
     }
 
     /**
