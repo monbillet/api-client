@@ -52,16 +52,16 @@ class ApiClient
     /**
      * Get the list of events
      *
+     * @param array{showPastEvents: 'only' | true}|null $options
      * @return array
-     * @throws ForbiddenException
-     * @throws NotFoundException
      * @throws HttpException
+     * @throws ForbiddenException
      * @throws InternalServerException
-     * @throws Exception
+     * @throws NotFoundException
      */
-    public function getEvents(): array
+    public function getEvents(?array $options = []): array
     {
-        $url = self::BASE_URL . 'events';
+        $url = self::BASE_URL . 'events' . '?' . http_build_query($this->sanitizeEventsOptionsForQueryParams($options));
         $data = $this->getResource($url);
         return $this->convertDates($data['events']);
     }
@@ -69,16 +69,16 @@ class ApiClient
     /**
      * Get the list of events order by groups
      *
-     * @return array
+     * @param array{showPastEvents: 'only' | true}|null $options
      * @throws ForbiddenException
      * @throws NotFoundException
      * @throws HttpException
      * @throws InternalServerException
      * @throws Exception
      */
-    public function getEventGroups(): array
+    public function getEventGroups(?array $options = []): array
     {
-        $url = self::BASE_URL . 'event-groups';
+        $url = self::BASE_URL . 'event-groups' . '?' . http_build_query($this->sanitizeEventsOptionsForQueryParams($options));
         $data = $this->getResource($url);
         return $this->convertDates($data['event-groups']);
     }
@@ -301,9 +301,22 @@ class ApiClient
      * @param string $url
      * @return string
      */
-    private function getFilePathCache($url): string
+    private function getFilePathCache(string $url): string
     {
-        return $this->cachePath . substr($url, strlen(self::BASE_URL) - 1);
+        return $this->cachePath . '/' . $this->generateHash($url);
+    }
+
+    /**
+     * Generate an hash from URL and API token
+     *
+     * @param string $url
+     * @return string
+     */
+    private function generateHash(string $url): string {
+        $path = substr($url, strlen(self::BASE_URL) - 1);
+        $api_token = $this->auth;
+
+        return md5( strtolower( ( $api_token . $path ) ));
     }
 
     /**
@@ -394,5 +407,25 @@ class ApiClient
     {
         $file_path = $this->getFilePathCache($url);
         return $file_path . '/cache.json';
+    }
+
+    /**
+     * Sanitize options which will be used as query parameters
+     *
+     * @param array{showPastEvents: 'only' | true} $params
+     * @return array
+     */
+    private function sanitizeEventsOptionsForQueryParams(array $params): array {
+        $out = [];
+
+        $show_past_events = $params['show_past_events'] ?? null;
+
+        if ($show_past_events === 'only'){
+            $out['showPastEvents'] = 'only';
+        } elseif ($show_past_events === true){
+            $out['showPastEvents'] = true;
+        }
+
+        return $out;
     }
 }

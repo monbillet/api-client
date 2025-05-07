@@ -32,6 +32,12 @@ $group_id = ''; // the id or unique name of a group
 $event_group = $client->getGroup($group_id);
 ```
 
+## Options
+
+`getEvents` and `getEventGroups` have the following options:
+
+* `showPastEvents` with value `true` or `only`
+
 ## Running the example
 
 1. Write your API key in the **example/.env.sample** file
