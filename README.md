@@ -29,7 +29,7 @@ $event_id = ''; // the id or unique name of an event
 $event = $client->getEvent($event_id);
 
 $group_id = ''; // the id or unique name of a group
-$event_group = $client->getGroup($group_id);
+$event_group = $client->getEventGroup($group_id);
 ```
 
 ## Options
