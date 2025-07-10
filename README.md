@@ -41,7 +41,7 @@ $event_group = $client->getEventGroup($group_id);
 
 ## Running the example
 
-1. Write your API key in the **example/.env.sample** file
+1. Write your API key in the **example/.env** file
 2. Run ```composer dump-autoload```
 3. Run ```composer run-script example```
 
