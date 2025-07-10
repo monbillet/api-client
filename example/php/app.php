@@ -11,7 +11,7 @@ use Monbillet\ApiClient;
 use Monbillet\NotFoundException;
 
 $token = getenv('MB_API_KEY');
-$client = new ApiClient($token, dirname(__DIR__) . "/cache", 10);
+$client = new ApiClient($token, dirname(__DIR__) . "/cache", 0);
 
 $error = null;
 $event = null;
