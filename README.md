@@ -37,6 +37,7 @@ $event_group = $client->getEventGroup($group_id);
 `getEvents` and `getEventGroups` have the following options:
 
 * `showPastEvents` with value `true` or `only`
+* `withDetails` with value `true`
 
 ## Running the example
 

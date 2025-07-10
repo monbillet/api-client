@@ -426,6 +426,10 @@ class ApiClient
             $out['showPastEvents'] = true;
         }
 
+        if (isset($params['withDetails'])) {
+            $out['withDetails'] = true;
+        }
+
         return $out;
     }
 }
