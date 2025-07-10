@@ -24,6 +24,6 @@
         ]
     },
     "scripts": {
-        "example": "source example/.env.sample && php -S localhost:9000 -t example/public"
+        "example": "source example/.env.sample && php -S localhost:8000 -t example/public"
     }
 }
