@@ -21,6 +21,11 @@ class ApiClient
     const CACHE_DIR_NAME = 'monbillet-api-client';
 
     /**
+     * @var string
+     */
+    private $baseUrl;
+
+    /**
      * @var string|null
      */
     private $auth = null;
@@ -40,13 +45,14 @@ class ApiClient
      * @param string|null $cache_path Absolute path (optional)
      * @param int $cache_expire_minutes (optional)
      */
-    public function __construct(?string $api_key = null, ?string $cache_path = null, int $cache_expire_minutes = 10)
+    public function __construct(?string $api_key = null, ?string $cache_path = null, int $cache_expire_minutes = 10, ?string $base_url = null)
     {
         if(!empty($api_key)){
             $this->auth = self::HEADER_NAME . ':' . $api_key;
         }
         $this->cachePath = isset($cache_path) ? rtrim($cache_path, '/') . '/' . self::CACHE_DIR_NAME : null;
         $this->cacheExpireMinutes = $cache_expire_minutes;
+        $this->baseUrl = $base_url ?? self::BASE_URL;
     }
 
     /**
@@ -61,7 +67,7 @@ class ApiClient
      */
     public function getEvents(?array $options = []): array
     {
-        $url = self::BASE_URL . 'events' . '?' . http_build_query($this->sanitizeEventsOptionsForQueryParams($options));
+        $url = $this->baseUrl . 'events' . '?' . http_build_query($this->sanitizeEventsOptionsForQueryParams($options));
         $data = $this->getResource($url);
         return $this->convertDates($data['events']);
     }
@@ -78,7 +84,7 @@ class ApiClient
      */
     public function getEventGroups(?array $options = []): array
     {
-        $url = self::BASE_URL . 'event-groups' . '?' . http_build_query($this->sanitizeEventsOptionsForQueryParams($options));
+        $url = $this->baseUrl . 'event-groups' . '?' . http_build_query($this->sanitizeEventsOptionsForQueryParams($options));
         $data = $this->getResource($url);
         return $this->convertDates($data['event-groups']);
     }
@@ -104,7 +110,7 @@ class ApiClient
             throw new UnexpectedValueException('Forbidden chars');
         }
 
-        $url = self::BASE_URL . 'events/' .  $event_id;
+        $url = $this->baseUrl . 'events/' .  $event_id;
         $data = $this->getResource($url);
 
         return $this->convertDates($data['event']);
@@ -131,7 +137,7 @@ class ApiClient
             throw new UnexpectedValueException('Forbidden chars');
         }
 
-        $url = self::BASE_URL . 'event-groups/' .  $group_id;
+        $url = $this->baseUrl . 'event-groups/' .  $group_id;
         $data = $this->getResource($url);
 
         return $this->convertDates($data['event-groups']);
@@ -313,7 +319,7 @@ class ApiClient
      * @return string
      */
     private function generateHash(string $url): string {
-        $path = substr($url, strlen(self::BASE_URL) - 1);
+        $path = substr($url, strlen($this->baseUrl) - 1);
         $api_token = $this->auth;
 
         return md5( strtolower( ( $api_token . $path ) ));
