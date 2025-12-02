@@ -68,6 +68,10 @@
                         <td><?= $event['text'] ?></td>
                     </tr>
                     <tr>
+                        <th>URL</th>
+                        <td><?= $event['url'] ?></td>
+                    </tr>
+                    <tr>
                         <th>Affiche <small>Grande taille</small></th>
                         <td><img src='<?= $event['posterPreview'] ?>' alt="Image de l'évènement" width=500px></td>
                     </tr>
