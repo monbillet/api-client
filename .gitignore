@@ -2,3 +2,8 @@
 vendor/
 example/cache
 **/*/.env
+/node_modules/
+
+# php-cs-fixer
+/.php-cs-fixer.cache
+/.php-cs-fixer.php

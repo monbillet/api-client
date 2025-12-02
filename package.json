@@ -1,0 +1,13 @@
+{
+  "name": "@monbillet/api-client",
+  "version": "1.2.5",
+  "author": "monbillet.ch <contact@monbillet.ch> (https://monbillet.ch)",
+  "license": "MIT",
+  "devDependencies": {
+    "husky": "^9.1.7",
+    "lint-staged": "^16.2.7"
+  },
+  "scripts": {
+    "prepare": "husky"
+  }
+}
