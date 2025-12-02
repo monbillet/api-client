@@ -4,6 +4,4 @@ namespace Monbillet;
 
 use Monbillet\HttpException;
 
-class InternalServerException extends HttpException
-{
-}
+class InternalServerException extends HttpException {}

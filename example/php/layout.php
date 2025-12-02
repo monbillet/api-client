@@ -17,11 +17,11 @@
 
 <body>
     <div class="container py-3">
-        <?php if (isset($error))  { ?>
+        <?php if (isset($error)) { ?>
             <div class="alert alert-danger">
                 <?= $error ?>
             </div>
-        <?php }else if ($page === 'event') {?>
+        <?php } elseif ($page === 'event') {?>
             <!-- Show detailed informations about a specific event -->
             <p>
                 <a href="/">← Liste des événements</a>
@@ -78,7 +78,7 @@
                 </tbody>
             </table>
 
-        <?php } else if ($page === 'event-groups') { ?>
+        <?php } elseif ($page === 'event-groups') { ?>
             <!-- Show a list of the events ordered by groups -->
 
             <h3 class="my-5"> 
@@ -122,7 +122,7 @@
                 <br>
             <?php } ?><!-- end foreach -->
 
-        <?php } else if ($page === 'events') { ?>
+        <?php } elseif ($page === 'events') { ?>
             <!-- Show a list of the events -->
             <section>
                 <h3 class="my-5"> 

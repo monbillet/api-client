@@ -4,6 +4,4 @@ namespace Monbillet;
 
 use Monbillet\HttpException;
 
-class NotFoundException extends HttpException
-{
-}
+class NotFoundException extends HttpException {}

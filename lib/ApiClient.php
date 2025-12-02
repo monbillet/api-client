@@ -16,9 +16,9 @@ use Monbillet\NotFoundException;
  */
 class ApiClient
 {
-    const HEADER_NAME = 'X-Monbillet-Api-Token';
-    const BASE_URL = 'https://monbillet.ch/api/v1/';
-    const CACHE_DIR_NAME = 'monbillet-api-client';
+    public const HEADER_NAME = 'X-Monbillet-Api-Token';
+    public const BASE_URL = 'https://monbillet.ch/api/v1/';
+    public const CACHE_DIR_NAME = 'monbillet-api-client';
 
     /**
      * @var string
@@ -47,7 +47,7 @@ class ApiClient
      */
     public function __construct(?string $api_key = null, ?string $cache_path = null, int $cache_expire_minutes = 10, ?string $base_url = null)
     {
-        if(!empty($api_key)){
+        if (!empty($api_key)) {
             $this->auth = self::HEADER_NAME . ':' . $api_key;
         }
         $this->cachePath = isset($cache_path) ? rtrim($cache_path, '/') . '/' . self::CACHE_DIR_NAME : null;
@@ -110,7 +110,7 @@ class ApiClient
             throw new UnexpectedValueException('Forbidden chars');
         }
 
-        $url = $this->baseUrl . 'events/' .  $event_id;
+        $url = $this->baseUrl . 'events/' . $event_id;
         $data = $this->getResource($url);
 
         return $this->convertDates($data['event']);
@@ -137,7 +137,7 @@ class ApiClient
             throw new UnexpectedValueException('Forbidden chars');
         }
 
-        $url = $this->baseUrl . 'event-groups/' .  $group_id;
+        $url = $this->baseUrl . 'event-groups/' . $group_id;
         $data = $this->getResource($url);
 
         return $this->convertDates($data['event-groups']);
@@ -156,7 +156,7 @@ class ApiClient
         foreach ($from as $k => $v) {
             if (is_array($v)) {
                 $out[$k] = $this->convertDates($v);
-            } else if (in_array($k, $convert_keys, true) && isset($v)) {
+            } elseif (in_array($k, $convert_keys, true) && isset($v)) {
                 $out[$k] = new DateTime($v);
             } else {
                 $out[$k] = $v;
@@ -318,11 +318,12 @@ class ApiClient
      * @param string $url
      * @return string
      */
-    private function generateHash(string $url): string {
+    private function generateHash(string $url): string
+    {
         $path = substr($url, strlen($this->baseUrl) - 1);
         $api_token = $this->auth;
 
-        return md5( strtolower( ( $api_token . $path ) ));
+        return md5(strtolower(($api_token . $path)));
     }
 
     /**
@@ -359,7 +360,7 @@ class ApiClient
         curl_setopt_array($ch, [
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_URL => $url,
-            CURLOPT_HTTPHEADER => [$this->auth]
+            CURLOPT_HTTPHEADER => [$this->auth],
         ]);
 
         $result = curl_exec($ch);
@@ -421,14 +422,15 @@ class ApiClient
      * @param array{showPastEvents: 'only' | true} $params
      * @return array
      */
-    private function sanitizeEventsOptionsForQueryParams(array $params): array {
+    private function sanitizeEventsOptionsForQueryParams(array $params): array
+    {
         $out = [];
 
         $show_past_events = $params['showPastEvents'] ?? null;
 
-        if ($show_past_events === 'only'){
+        if ($show_past_events === 'only') {
             $out['showPastEvents'] = 'only';
-        } elseif ($show_past_events === true){
+        } elseif ($show_past_events === true) {
             $out['showPastEvents'] = true;
         }
 

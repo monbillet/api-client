@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This is a basic example to show how to use the ApiClient from the
  * monbillet.ch library. Make sure to configure your token in .env.sample
@@ -6,7 +7,7 @@
  * THIS IS FOR DEMONSTRATION PURPOSES ONLY.
  * DO NOT BLINDLY COPY ALL OF THIS FOR USE ON YOUR WEBSITE.
  */
- 
+
 use Monbillet\ApiClient;
 use Monbillet\NotFoundException;
 
@@ -43,14 +44,14 @@ try {
 
         $event = $client->getEvent($_GET['q']);
 
-    // Url: http://localhost:9000/page=event-groups
+        // Url: http://localhost:9000/page=event-groups
     } elseif ($page === 'event-groups') {
         $event_groups = $client->getEventGroups();
 
-    // Url: http://localhost:9000/page=events
+        // Url: http://localhost:9000/page=events
     } elseif ($page === 'events') {
         $events = $client->getEvents();
-    }else {
+    } else {
         throw new NotFoundException('Page ' . $page . ' not found', 404);
     }
 

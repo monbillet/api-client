@@ -4,6 +4,4 @@ namespace Monbillet;
 
 use Monbillet\HttpException;
 
-class ForbiddenException extends HttpException
-{
-}
+class ForbiddenException extends HttpException {}
