@@ -366,8 +366,6 @@ class ApiClient
         $result = curl_exec($ch);
         $httpcode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
 
-        curl_close($ch);
-
         if ($httpcode === 403) {
             throw new ForbiddenException('Access to resource ' . $url . ' is forbidden.', 403);
         }
