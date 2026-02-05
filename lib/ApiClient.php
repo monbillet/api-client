@@ -58,7 +58,7 @@ class ApiClient
     /**
      * Get the list of events
      *
-     * @param array{showPastEvents: 'only' | true}|null $options
+     * @param array{withDetails: true}|null $options
      * @return array
      * @throws HttpException
      * @throws ForbiddenException
@@ -75,7 +75,7 @@ class ApiClient
     /**
      * Get the list of events order by groups
      *
-     * @param array{showPastEvents: 'only' | true}|null $options
+     * @param array{withDetails: true}|null $options
      * @throws ForbiddenException
      * @throws NotFoundException
      * @throws HttpException
@@ -417,20 +417,12 @@ class ApiClient
     /**
      * Sanitize options which will be used as query parameters
      *
-     * @param array{showPastEvents: 'only' | true} $params
+     * @param array{withDetails: true} $params
      * @return array
      */
     private function sanitizeEventsOptionsForQueryParams(array $params): array
     {
         $out = [];
-
-        $show_past_events = $params['showPastEvents'] ?? null;
-
-        if ($show_past_events === 'only') {
-            $out['showPastEvents'] = 'only';
-        } elseif ($show_past_events === true) {
-            $out['showPastEvents'] = true;
-        }
 
         if (isset($params['withDetails'])) {
             $out['withDetails'] = true;
