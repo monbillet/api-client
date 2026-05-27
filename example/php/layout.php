@@ -69,7 +69,7 @@
                     </tr>
                     <tr>
                         <th>URL</th>
-                        <td><?= $event['url'] ?></td>
+                        <td><a href="<?= $event['url'] ?>"><?= $event['url'] ?></a></td>
                     </tr>
                     <tr>
                         <th>Affiche <small>Grande taille</small></th>
