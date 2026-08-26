@@ -138,12 +138,15 @@
                                 <div class="card-body">
                                     <a href="?page=event&q=<?=$event['uniqueName']?>" class="stretched-link">
                                     <h3 class="card-title">
-                                        <small class="pretitle">
-                                            <?= $event['preTitle'] ?>
-                                        </small>
+                                        <span class="event-group">
+                                            <?= $event['associatedEventsGroup']['title'] ?>
+                                        </span>
                                         <span class="title">
                                             <?= $event['title'] ?>
                                         </span>
+                                        <small class="postTitle">
+                                            <?= $event['postTitle'] ?>
+                                        </small>
                                     </h3>
                                     </a>
                                 </div>
